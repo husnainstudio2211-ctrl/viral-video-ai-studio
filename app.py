@@ -119,9 +119,10 @@ with main_col:
         if st.button("ANALYZE"):
             with st.spinner("🤖 AI Video Processing in Progress..."):
                 try:
+                    # Environment variable / Secrets se key uthana
                     api_key = st.secrets.get("GEMINI_API_KEY")
                     if not api_key:
-                        st.error("API Key missing! Please check Streamlit Secrets.")
+                        st.error("API Key missing! Streamlit Secrets mein GEMINI_API_KEY add karein.")
                     else:
                         genai.configure(api_key=api_key)
                         
