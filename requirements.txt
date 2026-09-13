@@ -1,0 +1,6 @@
+streamlit
+google-genai
+gTTS
+pillow
+requests
+opencv-python-headless
