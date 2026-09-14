@@ -1,4 +1,3 @@
-
 import os
 import time
 import tempfile
@@ -21,91 +20,85 @@ st.set_page_config(
 
 
 # ============================================================
-# LUXURY CSS
+# LUXURY DESIGN
 # ============================================================
 
 st.markdown(
     """
     <style>
 
-    /* Overall app */
     .stApp {
         background:
             radial-gradient(
                 circle at 10% 0%,
-                rgba(124, 58, 237, 0.18),
-                transparent 28%
+                rgba(124, 58, 237, 0.16),
+                transparent 30%
             ),
             radial-gradient(
-                circle at 90% 10%,
-                rgba(14, 165, 233, 0.14),
-                transparent 28%
+                circle at 90% 5%,
+                rgba(14, 165, 233, 0.12),
+                transparent 30%
             );
     }
 
-    /* Hide sidebar completely */
     [data-testid="stSidebar"] {
         display: none;
     }
 
-    /* Main container */
     .block-container {
         max-width: 1180px;
         padding-top: 35px;
-        padding-bottom: 50px;
+        padding-bottom: 60px;
     }
 
-    /* Header */
     .hero {
         text-align: center;
-        padding: 18px 10px 8px 10px;
+        padding: 20px 10px 10px 10px;
     }
 
-    .hero-badge {
+    .badge {
         display: inline-block;
-        padding: 7px 14px;
+        padding: 8px 15px;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.14);
         background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
         font-size: 12px;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         text-transform: uppercase;
-        opacity: 0.8;
-        margin-bottom: 15px;
+        margin-bottom: 16px;
     }
 
     .hero-title {
-        font-size: 52px;
-        line-height: 1.05;
+        font-size: 54px;
         font-weight: 900;
-        letter-spacing: -2px;
-        margin-bottom: 10px;
+        letter-spacing: -2.5px;
+        line-height: 1.05;
+        margin-bottom: 12px;
     }
 
     .hero-subtitle {
+        max-width: 760px;
+        margin: auto;
         font-size: 17px;
         opacity: 0.68;
-        max-width: 760px;
-        margin: 0 auto;
+        line-height: 1.6;
     }
 
-    /* Brand */
-    .brand {
+    .creator {
         text-align: center;
-        margin-top: 14px;
-        margin-bottom: 35px;
-        font-size: 15px;
-        opacity: 0.6;
+        margin-top: 16px;
+        margin-bottom: 38px;
+        font-size: 14px;
+        opacity: 0.60;
     }
 
-    .brand strong {
-        font-size: 18px;
+    .creator strong {
+        font-size: 19px;
         opacity: 1;
     }
 
-    /* Upload card */
-    .upload-card {
-        padding: 28px;
+    .upload-box {
+        padding: 32px;
         border-radius: 24px;
         border: 1px solid rgba(255,255,255,0.12);
         background:
@@ -114,71 +107,57 @@ st.markdown(
                 rgba(255,255,255,0.08),
                 rgba(255,255,255,0.025)
             );
-        box-shadow:
-            0 20px 70px rgba(0,0,0,0.18);
-        margin-bottom: 22px;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.18);
     }
 
     .upload-title {
-        font-size: 25px;
-        font-weight: 800;
         text-align: center;
-        margin-bottom: 7px;
+        font-size: 28px;
+        font-weight: 850;
+        margin-bottom: 8px;
     }
 
     .upload-subtitle {
         text-align: center;
         font-size: 14px;
         opacity: 0.62;
-        margin-bottom: 18px;
+        margin-bottom: 22px;
     }
 
-    /* Analyze button */
-    .stButton > button {
-        width: 100%;
-        min-height: 58px;
-        border-radius: 15px;
-        font-size: 17px;
-        font-weight: 800;
-        letter-spacing: 0.3px;
+    .result-header {
+        font-size: 28px;
+        font-weight: 850;
+        margin: 30px 0 16px 0;
     }
 
-    /* Result cards */
     .result-card {
         padding: 22px;
-        margin: 16px 0;
+        margin: 15px 0;
         border-radius: 20px;
         border: 1px solid rgba(255,255,255,0.10);
-        background: rgba(255,255,255,0.045);
+        background: rgba(255,255,255,0.04);
     }
 
-    .result-heading {
-        font-size: 20px;
-        font-weight: 800;
-        margin-bottom: 10px;
-    }
-
-    /* Status */
-    .status-text {
-        text-align: center;
-        font-size: 13px;
-        opacity: 0.65;
-        margin-top: 10px;
-    }
-
-    /* Footer */
     .footer {
         text-align: center;
-        margin-top: 45px;
-        padding-top: 22px;
+        margin-top: 50px;
+        padding-top: 25px;
         border-top: 1px solid rgba(255,255,255,0.08);
         opacity: 0.55;
     }
 
     .footer-name {
-        font-size: 22px;
+        font-size: 23px;
         font-weight: 900;
         opacity: 1;
+    }
+
+    .stButton > button {
+        min-height: 58px;
+        border-radius: 15px;
+        font-size: 17px;
+        font-weight: 850;
+        letter-spacing: 0.3px;
     }
 
     </style>
@@ -188,14 +167,14 @@ st.markdown(
 
 
 # ============================================================
-# HEADER
+# HERO
 # ============================================================
 
 st.markdown(
     """
     <div class="hero">
 
-        <div class="hero-badge">
+        <div class="badge">
             AI POWERED • YOUTUBE SEO STUDIO
         </div>
 
@@ -204,8 +183,9 @@ st.markdown(
         </div>
 
         <div class="hero-subtitle">
-            Upload your video and let AI understand the video,
-            voice and content to create a complete YouTube SEO package.
+            Upload your video and let AI understand its visuals,
+            voice, topic and message to create a complete
+            professional YouTube SEO package.
         </div>
 
     </div>
@@ -215,7 +195,7 @@ st.markdown(
 
 st.markdown(
     """
-    <div class="brand">
+    <div class="creator">
         Created by <strong>Husnain Akram</strong>
     </div>
     """,
@@ -224,28 +204,25 @@ st.markdown(
 
 
 # ============================================================
-# GET API KEY FROM STREAMLIT SECRETS
+# API KEY FROM STREAMLIT SECRETS
 # ============================================================
 
 def get_api_key():
     """
     API key user ko show nahi hoti.
-    Streamlit Cloud Secrets se read hoti hai.
+    Streamlit Secrets se read hoti hai.
     """
 
     try:
-        secret_key = st.secrets.get("GEMINI_API_KEY", "")
+        secret = st.secrets.get("GEMINI_API_KEY", "")
 
-        if secret_key:
-            return str(secret_key).strip()
+        if secret:
+            return str(secret).strip()
 
     except Exception:
         pass
 
-    # Local development fallback
-    env_key = os.getenv("GEMINI_API_KEY", "")
-
-    return env_key.strip()
+    return os.getenv("GEMINI_API_KEY", "").strip()
 
 
 API_KEY = get_api_key()
@@ -258,39 +235,28 @@ API_KEY = get_api_key()
 if "result" not in st.session_state:
     st.session_state.result = ""
 
-if "video_name" not in st.session_state:
-    st.session_state.video_name = ""
-
-
-# ============================================================
-# DAILY LIMIT
-# ============================================================
-
-# NOTE:
-# Streamlit session-based limit.
-# For a true shared 3-per-day limit across all users,
-# use a persistent database later.
-
 if "analysis_count" not in st.session_state:
     st.session_state.analysis_count = 0
 
-MAX_ANALYSES_PER_SESSION = 3
+
+# Maximum analyses per browser session
+MAX_ANALYSES = 3
 
 
 # ============================================================
-# VIDEO UPLOAD AREA
+# VIDEO UPLOAD
 # ============================================================
 
 st.markdown(
     """
-    <div class="upload-card">
+    <div class="upload-box">
 
         <div class="upload-title">
             🎥 Upload Your Video
         </div>
 
         <div class="upload-subtitle">
-            MP4, MOV, AVI, MKV, WEBM and other supported video formats
+            AI will analyze the video, voice, topic and overall content.
         </div>
 
     </div>
@@ -298,9 +264,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.write("")
+
 
 uploaded_video = st.file_uploader(
-    "Select your video",
+    "Choose your video",
     type=[
         "mp4",
         "mov",
@@ -318,9 +286,7 @@ uploaded_video = st.file_uploader(
 # VIDEO PREVIEW
 # ============================================================
 
-if uploaded_video:
-
-    st.session_state.video_name = uploaded_video.name
+if uploaded_video is not None:
 
     st.success(
         f"✅ Video ready: {uploaded_video.name}"
@@ -328,124 +294,153 @@ if uploaded_video:
 
     st.video(uploaded_video)
 
-    size_mb = uploaded_video.size / (1024 * 1024)
+    file_size_mb = uploaded_video.size / (1024 * 1024)
 
-    st.markdown(
-        f"""
-        <div class="status-text">
-            Video size: {size_mb:.2f} MB
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.caption(
+        f"Video size: {file_size_mb:.2f} MB"
     )
 
 
 # ============================================================
-# ANALYZE PROMPT
+# AI PROMPT
 # ============================================================
 
 ANALYSIS_PROMPT = """
-You are an elite YouTube SEO strategist, video analyst,
-content strategist and YouTube growth consultant.
+You are an elite YouTube SEO strategist,
+professional video analyst and YouTube growth consultant.
 
-Analyze the uploaded video deeply.
+Analyze the uploaded video carefully.
 
-You should understand:
-- visual content
+Understand as much as possible from:
+- visual scenes
 - spoken voice
-- dialogue
 - narration
-- important scenes
-- main topic
-- overall message
-- audience
-- educational/entertainment value
+- dialogue
+- on-screen text
+- topic
+- message
 - tone
-- intent
+- style
+- audience
+- educational value
+- entertainment value
 - important keywords
 
 Then create a complete professional YouTube publishing package.
 
-Do not invent facts that are not present in the video.
-Do not use deceptive clickbait.
-Make titles attractive but truthful.
+IMPORTANT RULES:
 
-Return the response using EXACTLY these sections:
+1. Use the actual uploaded video as the primary source.
+2. Do not invent facts that are not present in the video.
+3. Do not create deceptive clickbait.
+4. Titles should be catchy, interesting and truthful.
+5. Description must accurately describe the video.
+6. Tags must be directly related to the actual content.
+7. Hashtags must be relevant.
+8. Do not keyword-stuff.
+9. Make the result easy to copy into YouTube Studio.
+10. Do not guarantee that a video will go viral.
 
-# 🔥 1. FIVE BEST YOUTUBE TITLES
+RETURN EXACTLY THESE SECTIONS:
 
-Create 5 different, catchy and high-CTR title options.
+==================================================
+🔥 1. FIVE CATCHY YOUTUBE TITLES
+==================================================
 
-# 🏆 2. RECOMMENDED BEST TITLE
+Give exactly 5 different title options.
 
-Choose the strongest title from the 5 options
-and briefly explain why.
+Make them varied:
+- curiosity based
+- benefit based
+- problem/solution
+- keyword focused
+- emotional/high-CTR
 
-# 📝 3. SEO-OPTIMIZED DESCRIPTION
+==================================================
+🏆 2. BEST TITLE
+==================================================
 
-Write one professional YouTube description based on the
-actual video content.
+Select the strongest title from the five.
+
+Give a short explanation of why it is the strongest.
+
+==================================================
+📝 3. SEO-OPTIMIZED DESCRIPTION
+==================================================
+
+Write one professional YouTube description based on
+the actual video.
 
 Include:
 - strong opening hook
 - natural keywords
-- accurate summary
-- viewer benefit
+- accurate video summary
+- viewer value
 - call to action
 
-# 🏷️ 4. YOUTUBE TAGS
+==================================================
+🏷️ 4. YOUTUBE TAGS
+==================================================
 
-Create 25 relevant YouTube search tags.
+Give 25 relevant YouTube tags.
 
-Return them as one comma-separated line.
+Return them in one comma-separated line.
 
-# #️⃣ 5. HASHTAGS
+==================================================
+#️⃣ 5. HASHTAGS
+==================================================
 
-Create 10 highly relevant hashtags.
+Give 10 relevant hashtags.
 
-Return them as one line.
+Return them in one line.
 
-# ⏰ 6. BEST UPLOAD TIMING
+==================================================
+⏰ 6. BEST UPLOAD TIMING
+==================================================
 
-Give practical YouTube upload timing guidance for Pakistan
-Standard Time (PKT).
+Give practical upload timing recommendations for
+Pakistan Standard Time (PKT).
 
 Include:
 - best days
 - suggested time windows
 - simple testing strategy
 
-Do not guarantee virality.
+Do NOT claim any time guarantees virality.
 
-# 📊 7. VIDEO ANALYSIS
+==================================================
+📊 7. VIDEO ANALYSIS
+==================================================
 
-Tell the creator:
+Explain:
 
-- What type of video this is
-- Main topic
-- Main audience
-- Main message
-- Tone/style
-- Strongest content point
-- Weakest content point
-- One improvement suggestion
+- video type
+- main topic
+- target audience
+- main message
+- tone/style
+- strongest point
+- weakest point
+- one important improvement
 
-# 🚀 8. SEO GROWTH STRATEGY
+==================================================
+🚀 8. SEO GROWTH STRATEGY
+==================================================
 
-Give 5 practical recommendations for:
+Give 5 practical strategies for:
 
 1. CTR
-2. Search discovery
-3. Retention
+2. Search visibility
+3. Audience retention
 4. Engagement
 5. Early performance
 
-Keep everything professional and easy to copy into YouTube Studio.
+Keep everything professional and useful.
 """
 
 
 # ============================================================
-# UPLOAD TO GEMINI
+# UPLOAD VIDEO TO GEMINI
 # ============================================================
 
 def upload_video(client, streamlit_file):
@@ -457,31 +452,31 @@ def upload_video(client, streamlit_file):
     if not extension:
         extension = ".mp4"
 
-    temp_file = tempfile.NamedTemporaryFile(
+    temporary_file = tempfile.NamedTemporaryFile(
         delete=False,
-        suffix=extension,
+        suffix=extension
     )
 
-    temp_path = temp_file.name
+    temporary_path = temporary_file.name
 
     try:
 
-        temp_file.write(
+        temporary_file.write(
             streamlit_file.getvalue()
         )
 
-        temp_file.close()
+        temporary_file.close()
 
         gemini_file = client.files.upload(
-            file=temp_path
+            file=temporary_path
         )
 
-        return gemini_file, temp_path
+        return gemini_file, temporary_path
 
     except Exception:
 
         try:
-            temp_file.close()
+            temporary_file.close()
         except Exception:
             pass
 
@@ -489,12 +484,15 @@ def upload_video(client, streamlit_file):
 
 
 # ============================================================
-# WAIT FOR VIDEO PROCESSING
+# WAIT FOR GEMINI FILE PROCESSING
 # ============================================================
 
-def wait_for_video(client, gemini_file):
+def wait_for_video_processing(
+    client,
+    gemini_file
+):
 
-    progress = st.empty()
+    status_placeholder = st.empty()
 
     while True:
 
@@ -516,8 +514,8 @@ def wait_for_video(client, gemini_file):
 
         if state_name == "ACTIVE":
 
-            progress.success(
-                "✅ Video analysis input is ready."
+            status_placeholder.success(
+                "✅ Video is ready for AI analysis."
             )
 
             return current_file
@@ -531,18 +529,22 @@ def wait_for_video(client, gemini_file):
                 f"Gemini video processing failed: {state_name}"
             )
 
-        progress.info(
-            f"🎥 Preparing video for AI analysis... {state_name}"
+        status_placeholder.info(
+            f"🎥 Preparing your video for AI analysis... "
+            f"{state_name}"
         )
 
-        time.sleep(4)
+        time.sleep(5)
 
 
 # ============================================================
-# ANALYZE VIDEO WITH GEMINI
+# ANALYZE VIDEO
 # ============================================================
 
-def analyze_video(api_key, video_file):
+def analyze_video(
+    api_key,
+    streamlit_video
+):
 
     client = genai.Client(
         api_key=api_key
@@ -552,43 +554,42 @@ def analyze_video(api_key, video_file):
 
     try:
 
-        # Upload video
         with st.spinner(
             "📤 Uploading video to AI..."
         ):
 
             gemini_file, temporary_path = upload_video(
                 client,
-                video_file
+                streamlit_video
             )
 
-        # Wait
-        gemini_file = wait_for_video(
+        gemini_file = wait_for_video_processing(
             client,
             gemini_file
         )
 
-        # Generate result
         with st.spinner(
-            "🧠 AI video, voice aur content analyze kar raha hai..."
+            "🧠 AI is analyzing your video, voice and content..."
         ):
 
             response = client.models.generate_content(
                 model="gemini-3.8-flash",
                 contents=[
                     gemini_file,
-                    ANALYSIS_PROMPT,
-                ],
+                    ANALYSIS_PROMPT
+                ]
             )
 
         if not response:
+
             raise RuntimeError(
-                "Gemini ne response return nahi kiya."
+                "Gemini ne koi response return nahi kiya."
             )
 
         if not response.text:
+
             raise RuntimeError(
-                "Gemini ne empty response diya."
+                "Gemini ne empty response return kiya."
             )
 
         return response.text
@@ -609,9 +610,9 @@ def analyze_video(api_key, video_file):
 # ANALYZE BUTTON
 # ============================================================
 
-st.markdown("")
+st.write("")
 
-analyze = st.button(
+analyze_button = st.button(
     "✨ ANALYZE VIDEO & GENERATE COMPLETE SEO",
     type="primary",
     use_container_width=True,
@@ -619,12 +620,11 @@ analyze = st.button(
 
 
 # ============================================================
-# BUTTON ACTION
+# ANALYZE ACTION
 # ============================================================
 
-if analyze:
+if analyze_button:
 
-    # API secret missing
     if not API_KEY:
 
         st.error(
@@ -636,22 +636,24 @@ if analyze:
             "GEMINI_API_KEY set karni hogi."
         )
 
-    # No video
     elif uploaded_video is None:
 
         st.warning(
             "🎥 Pehle video upload karein."
         )
 
-    # Daily/session limit
-    elif st.session_state.analysis_count >= MAX_ANALYSES_PER_SESSION:
+    elif (
+        st.session_state.analysis_count
+        >= MAX_ANALYSES
+    ):
 
         st.error(
-            "⛔ Is session ki 3-video analysis limit complete ho gayi hai."
+            "⛔ Is browser session ki 3-video analysis limit complete ho gayi hai."
         )
 
         st.info(
-            "Naye session mein limit dobara available ho sakti hai."
+            "Ye local protection hai. Gemini ki Google-side limits "
+            "alag hoti hain."
         )
 
     else:
@@ -668,7 +670,7 @@ if analyze:
             st.session_state.analysis_count += 1
 
             st.success(
-                "🎉 Your complete YouTube SEO package is ready!"
+                "🎉 Complete YouTube SEO package ready hai!"
             )
 
         except Exception as error:
@@ -685,20 +687,20 @@ if analyze:
             ):
 
                 st.warning(
-                    "AI service authorization issue hai. "
-                    "Administrator ki API configuration check karein."
-                )
-
-            elif "429" in error_text:
-
-                st.warning(
-                    "AI service ki rate/quota limit temporarily hit ho gayi hai."
+                    "Gemini API authorization problem hai. "
+                    "Streamlit Secrets mein API key check karein."
                 )
 
             elif "404" in error_text:
 
                 st.warning(
-                    "Selected AI model/API endpoint available nahi hai."
+                    "Gemini model/API endpoint available nahi hai."
+                )
+
+            elif "429" in error_text:
+
+                st.warning(
+                    "Gemini Free Tier ki rate/quota limit hit ho gayi hai."
                 )
 
             elif (
@@ -708,7 +710,7 @@ if analyze:
 
                 st.warning(
                     "Video file bohat bari hai. "
-                    "Choti/compressed video try karein."
+                    "Smaller/compressed video try karein."
                 )
 
             else:
@@ -732,12 +734,8 @@ if st.session_state.result:
 
     st.markdown(
         """
-        <div class="result-card">
-
-            <div class="result-heading">
-                🏆 Your Premium YouTube SEO Package
-            </div>
-
+        <div class="result-header">
+            🏆 Premium YouTube SEO Package
         </div>
         """,
         unsafe_allow_html=True,
@@ -750,7 +748,7 @@ if st.session_state.result:
     st.markdown("---")
 
     st.download_button(
-        "📥 Download Complete SEO Package",
+        label="📥 Download Complete SEO Package",
         data=st.session_state.result,
         file_name="AI_Viral_Video_Studio_SEO.txt",
         mime="text/plain",
@@ -759,37 +757,18 @@ if st.session_state.result:
 
 
 # ============================================================
-# USAGE INDICATOR
+# USAGE
 # ============================================================
 
 remaining = max(
     0,
-    MAX_ANALYSES_PER_SESSION
+    MAX_ANALYSES
     - st.session_state.analysis_count
 )
 
 st.markdown(
     f"""
-    <div class="status-text">
-        Analyses used in this session:
-        {st.session_state.analysis_count} / {MAX_ANALYSES_PER_SESSION}
-        &nbsp; • &nbsp;
-        Remaining:
-        {remaining}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
-# FOOTER
-# ============================================================
-
-st.markdown(
-    """
     <div class="footer">
-
         <div class="footer-name">
             Husnain Akram
         </div>
@@ -798,8 +777,12 @@ st.markdown(
             AI Viral Video Studio
         </div>
 
+        <div style="margin-top:10px; font-size:12px;">
+            Analyses used in this session:
+            {st.session_state.analysis_count}/{MAX_ANALYSES}
+            • Remaining: {remaining}
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
