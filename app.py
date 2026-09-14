@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import json
 import base64
 
 st.set_page_config(page_title="AI VIRAL STUDIO", page_icon="🎬", layout="wide")
@@ -53,20 +52,12 @@ with main_col:
                         video_bytes = uploaded_file.read()
                         base64_video = base64.b64encode(video_bytes).decode("utf-8")
                         
-                        # Determine if it's an OAuth Token (AQ.) or Standard API Key (AIzaSy)
-                        if token.startswith("AQ."):
-                            # Use Bearer Token Authorization for OAuth tokens
-                            url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-                            headers = {
-                                "Authorization": f"Bearer {token}",
-                                "Content-Type": "application/json"
-                            }
-                        else:
-                            # Use standard API key parameter
-                            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={token}"
-                            headers = {
-                                "Content-Type": "application/json"
-                            }
+                        # Google ka naya API Key bhejney ka tareeqa
+                        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+                        headers = {
+                            "x-goog-api-key": token,  # Yahan token direct pass ho raha hai
+                            "Content-Type": "application/json"
+                        }
                         
                         payload = {
                             "contents": [{
