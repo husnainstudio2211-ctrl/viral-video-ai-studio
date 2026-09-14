@@ -99,36 +99,57 @@ with main_col:
                         video_bytes = uploaded_file.read()
                         base64_video = base64.b64encode(video_bytes).decode("utf-8")
                         
-                        # Fixing 404 Error: Changed model name to gemini-1.5-flash-latest
-                        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
-                        headers = {
-                            "x-goog-api-key": token,
-                            "Content-Type": "application/json"
-                        }
+                        # SMART FALLBACK SYSTEM: Automatically hunts for the correct model
+                        models_to_try = [
+                            "gemini-1.5-pro",
+                            "gemini-1.5-flash",
+                            "gemini-1.5-pro-001",
+                            "gemini-1.5-flash-001",
+                            "gemini-1.5-pro-002",
+                            "gemini-1.5-flash-002"
+                        ]
                         
-                        payload = {
-                            "contents": [{
-                                "parts": [
-                                    {"text": "Perform a professional, high-end viral strategy breakdown for this video: 1. 5 High-CTR Viral Titles, 2. First 3-Second Hook Optimization, 3. Audience Retention Factors, 4. Trending Hashtags & SEO Keywords, 5. Actionable Call-To-Action (CTA). Format the response professionally."},
-                                    {
-                                        "inline_data": {
-                                            "mime_type": uploaded_file.type,
-                                            "data": base64_video
+                        success = False
+                        
+                        for model_name in models_to_try:
+                            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+                            headers = {
+                                "x-goog-api-key": token,
+                                "Content-Type": "application/json"
+                            }
+                            
+                            payload = {
+                                "contents": [{
+                                    "parts": [
+                                        {"text": "Perform a professional, high-end viral strategy breakdown for this video: 1. 5 High-CTR Viral Titles, 2. First 3-Second Hook Optimization, 3. Audience Retention Factors, 4. Trending Hashtags & SEO Keywords, 5. Actionable Call-To-Action (CTA). Format the response professionally."},
+                                        {
+                                            "inline_data": {
+                                                "mime_type": uploaded_file.type,
+                                                "data": base64_video
+                                            }
                                         }
-                                    }
-                                ]
-                            }]
-                        }
-                        
-                        response = requests.post(url, headers=headers, json=payload)
-                        
-                        if response.status_code == 200:
-                            res_json = response.json()
-                            text = res_json['candidates'][0]['content']['parts'][0]['text']
-                            st.success("✅ Premium Analysis Complete!")
-                            st.markdown(text)
-                        else:
-                            st.error(f"Google API Error ({response.status_code}): {response.text}")
+                                    ]
+                                }]
+                            }
+                            
+                            response = requests.post(url, headers=headers, json=payload)
+                            
+                            if response.status_code == 200:
+                                res_json = response.json()
+                                text = res_json['candidates'][0]['content']['parts'][0]['text']
+                                st.success(f"✅ Premium Analysis Complete! (Powered by {model_name})")
+                                st.markdown(text)
+                                success = True
+                                break  # Model mil gaya, ab mazeed check nahi karega
+                            elif response.status_code == 404:
+                                continue  # Error 404 آیا تو یہ خود بخود اگلا ماڈل ٹرائی کرے گا
+                            else:
+                                st.error(f"API Error ({response.status_code}): {response.text}")
+                                success = True
+                                break
+                                
+                        if not success:
+                            st.error("Google API Error: آپ کے اکاؤنٹ پر فی الحال کوئی بھی ماڈل کام نہیں کر رہا۔")
                             
                 except Exception as e:
                     st.error(f"Execution Error: {str(e)}")
