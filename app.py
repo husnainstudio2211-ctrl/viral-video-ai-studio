@@ -9,7 +9,7 @@ from google import genai
 
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -21,86 +21,227 @@ st.set_page_config(
 
 
 # ============================================================
-# APP HEADER
+# LUXURY UI
 # ============================================================
 
-st.title("🎬 AI Viral Video Studio")
+st.markdown(
+    """
+    <style>
 
-st.write(
-    "Apni YouTube video upload karein aur AI se "
-    "Titles, Description, Tags, Hashtags aur Upload Strategy generate karein."
+    /* Main background */
+    .stApp {
+        background:
+            radial-gradient(
+                circle at top left,
+                rgba(120, 80, 255, 0.12),
+                transparent 35%
+            ),
+            radial-gradient(
+                circle at top right,
+                rgba(0, 180, 255, 0.10),
+                transparent 30%
+            );
+    }
+
+    /* Main title */
+    .luxury-title {
+        font-size: 48px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        margin-bottom: 5px;
+    }
+
+    .luxury-subtitle {
+        font-size: 18px;
+        opacity: 0.75;
+        margin-bottom: 25px;
+    }
+
+    /* Brand */
+    .brand-box {
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: linear-gradient(
+            135deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+        );
+        border: 1px solid rgba(255,255,255,0.13);
+        margin: 15px 0 25px 0;
+    }
+
+    .brand-name {
+        font-size: 28px;
+        font-weight: 900;
+    }
+
+    .brand-text {
+        font-size: 13px;
+        opacity: 0.65;
+    }
+
+    /* Cards */
+    .lux-card {
+        padding: 22px;
+        border-radius: 18px;
+        background: rgba(128,128,128,0.07);
+        border: 1px solid rgba(128,128,128,0.20);
+        margin-bottom: 18px;
+    }
+
+    /* Section heading */
+    .section-heading {
+        font-size: 25px;
+        font-weight: 800;
+        margin-top: 20px;
+        margin-bottom: 12px;
+    }
+
+    /* Small info */
+    .small-info {
+        font-size: 13px;
+        opacity: 0.65;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
-st.markdown("---")
+
+# ============================================================
+# HEADER
+# ============================================================
+
+st.markdown(
+    '<div class="luxury-title">🎬 AI Viral Video Studio</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="luxury-subtitle">'
+    'Professional AI-powered YouTube SEO & Video Intelligence Studio'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="brand-box">
+        <div class="brand-name">Husnain Akram</div>
+        <div class="brand-text">
+            Created & Designed by Husnain Akram
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
-# API KEY
+# API KEY FUNCTION
 # ============================================================
 
-def get_saved_api_key():
-    """
-    API key ko Streamlit Secrets ya environment variable se lene ki koshish.
-    """
+def get_secret_api_key():
 
-    # Streamlit Cloud Secrets
+    # Streamlit Cloud secrets
     try:
-        secret_key = st.secrets.get("GEMINI_API_KEY", "")
-        if secret_key:
-            return secret_key
+        value = st.secrets.get("GEMINI_API_KEY", "")
+
+        if value:
+            return str(value).strip()
+
     except Exception:
         pass
 
     # Environment variable
-    return os.getenv("GEMINI_API_KEY", "")
+    value = os.getenv("GEMINI_API_KEY", "")
+
+    return value.strip()
 
 
-saved_api_key = get_saved_api_key()
+# ============================================================
+# SESSION STATE
+# ============================================================
+
+if "api_key" not in st.session_state:
+
+    st.session_state.api_key = get_secret_api_key()
+
+
+if "generated_result" not in st.session_state:
+
+    st.session_state.generated_result = ""
 
 
 # ============================================================
 # SIDEBAR
 # ============================================================
 
-st.sidebar.header("🔑 Gemini API")
+st.sidebar.markdown("## 🔐 Gemini Setup")
 
-api_key = st.sidebar.text_input(
+sidebar_key = st.sidebar.text_input(
     "Google AI Studio API Key",
-    value=saved_api_key,
+    value=st.session_state.api_key,
     type="password",
     placeholder="AIza..."
 )
 
-if api_key:
-    st.sidebar.success("✅ API key available")
+
+# Save key in current Streamlit session
+if sidebar_key.strip():
+
+    st.session_state.api_key = sidebar_key.strip()
+
+    st.sidebar.success("✅ API key loaded")
 
 else:
+
     st.sidebar.warning(
-        "⚠️ API key enter karein"
+        "⚠️ API key required"
     )
+
 
 st.sidebar.markdown("---")
 
-st.sidebar.info(
-    "Google AI Studio se Gemini API key le kar yahan paste karein."
+st.sidebar.markdown("### 🤖 AI Model")
+
+MODEL_NAME = st.sidebar.selectbox(
+    "Gemini Model",
+    [
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.6-flash",
+        "gemini-2.5-flash",
+    ],
+    index=0
 )
 
+st.sidebar.markdown("---")
 
-# ============================================================
-# GEMINI MODEL
-# ============================================================
+st.sidebar.markdown(
+    """
+    **Usage**
 
-MODEL_NAME = "gemini-3.8-flash"
+    1. API key ایک بار enter کریں۔
+    2. Video upload کریں۔
+    3. Analyze button دبائیں۔
+    4. نئی video کے لیے دوبارہ video upload کریں۔
+    """
+)
 
 
 # ============================================================
 # VIDEO UPLOAD
 # ============================================================
 
-st.subheader("🎥 Upload Your Video")
+st.markdown(
+    '<div class="section-heading">🎥 Upload Your YouTube Video</div>',
+    unsafe_allow_html=True
+)
 
 uploaded_video = st.file_uploader(
-    "Apni YouTube video upload karein:",
+    "Video select کریں",
     type=[
         "mp4",
         "mov",
@@ -110,7 +251,7 @@ uploaded_video = st.file_uploader(
         "mpeg",
         "mpg"
     ],
-    help="Video upload karne ke baad Gemini uska content analyze karega."
+    help="YouTube video upload کریں تاکہ AI اس کا content analyze کر سکے."
 )
 
 
@@ -121,40 +262,44 @@ uploaded_video = st.file_uploader(
 if uploaded_video is not None:
 
     st.success(
-        f"✅ Video selected: {uploaded_video.name}"
+        f"✅ Selected: {uploaded_video.name}"
     )
 
-    st.video(
-        uploaded_video
-    )
+    st.video(uploaded_video)
 
-    file_size_mb = uploaded_video.size / (1024 * 1024)
+    size_mb = uploaded_video.size / (1024 * 1024)
 
     st.caption(
-        f"File size: {file_size_mb:.2f} MB"
+        f"Video Size: {size_mb:.2f} MB"
     )
 
 
 # ============================================================
-# EXTRA VIDEO INFORMATION
+# VIDEO DETAILS
 # ============================================================
 
-st.markdown("---")
+st.markdown(
+    '<div class="section-heading">📝 Video Information</div>',
+    unsafe_allow_html=True
+)
 
-st.subheader("📝 Video Information")
-
-video_topic = st.text_input(
+video_topic = st.text_area(
     "Video Topic / Idea (Optional)",
-    placeholder="Example: Pakistan mein online earning apps"
+    placeholder=(
+        "Example: How to earn money online in Pakistan"
+    ),
+    height=90
 )
 
 target_audience = st.text_input(
     "Target Audience (Optional)",
-    placeholder="Example: Pakistan students, beginners, freelancers"
+    placeholder=(
+        "Example: Pakistan students, beginners, freelancers"
+    )
 )
 
 language = st.selectbox(
-    "Output Language",
+    "SEO Content Language",
     [
         "Roman Urdu / Hindi",
         "English",
@@ -162,7 +307,7 @@ language = st.selectbox(
     ]
 )
 
-video_category = st.selectbox(
+category = st.selectbox(
     "Video Category",
     [
         "Education",
@@ -170,9 +315,9 @@ video_category = st.selectbox(
         "How-To / Tutorial",
         "Online Earning",
         "Freelancing",
-        "News / Updates",
         "Entertainment",
         "Gaming",
+        "News / Updates",
         "Review",
         "Other"
     ]
@@ -180,176 +325,184 @@ video_category = st.selectbox(
 
 
 # ============================================================
-# CREATE PROMPT
+# PROMPT
 # ============================================================
 
-def build_prompt(topic, audience, output_language, category):
+def build_prompt():
 
-    topic_text = topic.strip()
+    topic = video_topic.strip()
 
-    if not topic_text:
-        topic_text = "Analyze the uploaded video and determine its main topic."
+    if not topic:
 
-    audience_text = audience.strip()
+        topic = (
+            "Determine the main topic from the uploaded video."
+        )
 
-    if not audience_text:
-        audience_text = "General YouTube audience"
+    audience = target_audience.strip()
 
-    prompt = f"""
-You are a professional YouTube SEO strategist,
-content analyst and YouTube growth consultant.
+    if not audience:
+
+        audience = "General YouTube audience"
+
+    return f"""
+You are an elite YouTube SEO strategist,
+video content analyst and growth consultant.
 
 Analyze the uploaded video carefully.
 
-VIDEO TOPIC / EXTRA INFORMATION:
-{topic_text}
+Additional information:
 
-TARGET AUDIENCE:
-{audience_text}
+Video Topic:
+{topic}
 
-VIDEO CATEGORY:
+Target Audience:
+{audience}
+
+Language:
+{language}
+
+Category:
 {category}
 
-OUTPUT LANGUAGE:
-{output_language}
+Your objective is to create an accurate,
+professional and high-performing YouTube package.
 
-Your job is to understand the actual content of the uploaded video
-and create a complete YouTube SEO package based on the video.
+IMPORTANT RULES:
 
-IMPORTANT:
-
-- Use information from the uploaded video.
+- Analyze the actual uploaded video.
 - Do not invent facts.
-- Do not create misleading clickbait.
-- Titles should be catchy and high-CTR but truthful.
-- Description should accurately describe the video.
-- Tags should be strongly related to the actual video.
-- Hashtags should be relevant.
+- Do not create deceptive clickbait.
+- Titles should be attractive but truthful.
+- Description must accurately match the video.
+- Tags must be directly relevant.
+- Hashtags must be relevant.
 - Avoid keyword stuffing.
-- Make everything easy to copy into YouTube Studio.
-- Give practical recommendations rather than guaranteeing virality.
+- Make the output easy to copy into YouTube Studio.
+- Do not guarantee virality.
 
-RETURN THESE SECTIONS:
+OUTPUT:
 
 ==================================================
-1. 🔥 CATCHY YOUTUBE TITLES
+🔥 1. FIVE CATCHY TITLES
 ==================================================
 
-Give 5 title options.
+Create exactly 5 title options.
 
-Make them different from each other.
-
-Try different approaches such as:
+Use different approaches:
 - curiosity
 - benefit
 - problem/solution
-- strong keyword
+- keyword focused
 - emotional hook
 
 ==================================================
-2. 📝 SEO-OPTIMIZED DESCRIPTION
+📝 2. SEO-OPTIMIZED DESCRIPTION
 ==================================================
 
-Write one complete YouTube description.
+Write one professional description.
 
 Include:
-- strong opening hook
-- natural keywords
-- accurate video summary
-- viewer benefit
+- powerful opening hook
+- natural SEO keywords
+- accurate summary
+- viewer benefits
 - call to action
 
-Do not write fake claims.
-
 ==================================================
-3. 🏷️ YOUTUBE TAGS
+🏷️ 3. YOUTUBE TAGS
 ==================================================
 
-Give 25 highly relevant YouTube tags.
+Create 25 highly relevant tags.
 
-Return them in one comma-separated line.
-
-==================================================
-4. #️⃣ HASHTAGS
-==================================================
-
-Give 10 relevant hashtags.
-
-Return them in one line.
+Return them as one comma-separated line.
 
 ==================================================
-5. ⏰ BEST UPLOAD TIMING
+#️⃣ 4. HASHTAGS
 ==================================================
 
-Give practical upload recommendations for Pakistan Standard Time (PKT).
+Create 10 relevant hashtags.
+
+Return them as one line.
+
+==================================================
+⏰ 5. BEST UPLOAD TIMING
+==================================================
+
+Recommend practical upload times for Pakistan Standard Time (PKT).
 
 Include:
 - best days
 - suggested time windows
-- audience testing strategy
+- testing strategy
 
-Important:
-Do NOT claim any time guarantees virality.
-
-==================================================
-6. 📈 YOUTUBE SEO STRATEGY
-==================================================
-
-Give 5 practical tips covering:
-
-1. CTR
-2. Search visibility
-3. Audience retention
-4. Engagement
-5. Early video performance
+Do not promise that a time guarantees virality.
 
 ==================================================
-7. 🎯 BEST TITLE RECOMMENDATION
+📈 6. SEO GROWTH STRATEGY
 ==================================================
 
-From your 5 titles, select the single best title
-and explain briefly why it is the strongest option.
+Give 5 useful strategies for:
+- CTR
+- search discovery
+- retention
+- engagement
+- early performance
+
+==================================================
+🏆 7. BEST TITLE
+==================================================
+
+Select the strongest title from the 5 options.
+
+Explain briefly why you selected it.
+
+==================================================
+🎯 8. VIDEO CONTENT SUMMARY
+==================================================
+
+Give a short summary of what the uploaded video contains.
 """
 
-    return prompt
-
 
 # ============================================================
-# UPLOAD VIDEO TO GEMINI
+# UPLOAD VIDEO
 # ============================================================
 
-def upload_video_to_gemini(client, uploaded_file):
+def upload_video(client, streamlit_file):
 
-    suffix = Path(uploaded_file.name).suffix
+    extension = Path(
+        streamlit_file.name
+    ).suffix
 
-    if not suffix:
-        suffix = ".mp4"
+    if not extension:
 
-    temp_file = tempfile.NamedTemporaryFile(
+        extension = ".mp4"
+
+    temp = tempfile.NamedTemporaryFile(
         delete=False,
-        suffix=suffix
+        suffix=extension
     )
 
-    temp_path = temp_file.name
+    path = temp.name
 
     try:
 
-        temp_file.write(
-            uploaded_file.getvalue()
+        temp.write(
+            streamlit_file.getvalue()
         )
 
-        temp_file.close()
+        temp.close()
 
-        uploaded_gemini_file = client.files.upload(
-            file=temp_path
+        gemini_file = client.files.upload(
+            file=path
         )
 
-        return uploaded_gemini_file, temp_path
+        return gemini_file, path
 
     except Exception:
 
         try:
-            temp_file.close()
+            temp.close()
         except Exception:
             pass
 
@@ -357,23 +510,28 @@ def upload_video_to_gemini(client, uploaded_file):
 
 
 # ============================================================
-# WAIT FOR VIDEO PROCESSING
+# WAIT FOR PROCESSING
 # ============================================================
 
-def wait_for_video_processing(client, gemini_file):
+def wait_until_active(client, gemini_file):
 
-    status_placeholder = st.empty()
+    status_box = st.empty()
 
     while True:
 
-        current_file = client.files.get(
+        current = client.files.get(
             name=gemini_file.name
         )
 
-        state = getattr(current_file, "state", None)
+        state = getattr(
+            current,
+            "state",
+            None
+        )
 
         if state is None:
-            return current_file
+
+            return current
 
         state_name = getattr(
             state,
@@ -381,76 +539,78 @@ def wait_for_video_processing(client, gemini_file):
             str(state)
         )
 
-        status_placeholder.info(
-            f"🎥 Gemini video processing: {state_name}"
-        )
-
         if state_name == "ACTIVE":
-            status_placeholder.success(
-                "✅ Video successfully processed by Gemini."
-            )
-            return current_file
 
-        if state_name in [
+            status_box.success(
+                "✅ Video processing complete."
+            )
+
+            return current
+
+        if state_name in (
             "FAILED",
             "ERROR"
-        ]:
+        ):
+
             raise RuntimeError(
-                f"Gemini video processing failed: {state_name}"
+                f"Video processing failed: {state_name}"
             )
+
+        status_box.info(
+            f"🎥 Gemini processing video... {state_name}"
+        )
 
         time.sleep(5)
 
 
 # ============================================================
-# GENERATE SEO CONTENT
+# ANALYZE VIDEO
 # ============================================================
 
-def generate_seo_content(
-    api_key_value,
-    uploaded_file,
-    topic,
-    audience,
-    output_language,
-    category
-):
+def analyze_video(api_key_value):
 
     client = genai.Client(
         api_key=api_key_value
     )
 
-    gemini_file = None
     temporary_path = None
 
     try:
 
-        # Upload video
+        # --------------------------------------------
+        # Upload
+        # --------------------------------------------
+
         with st.spinner(
             "📤 Video Gemini ko upload ho rahi hai..."
         ):
 
-            gemini_file, temporary_path = upload_video_to_gemini(
+            gemini_file, temporary_path = upload_video(
                 client,
-                uploaded_file
+                uploaded_video
             )
 
-        # Wait for processing
-        gemini_file = wait_for_video_processing(
+        # --------------------------------------------
+        # Processing
+        # --------------------------------------------
+
+        gemini_file = wait_until_active(
             client,
             gemini_file
         )
 
-        # Build prompt
-        prompt = build_prompt(
-            topic=topic,
-            audience=audience,
-            output_language=output_language,
-            category=category
-        )
+        # --------------------------------------------
+        # Prompt
+        # --------------------------------------------
 
+        prompt = build_prompt()
+
+        # --------------------------------------------
         # Generate
+        # --------------------------------------------
+
         with st.spinner(
-            "🤖 Gemini video analyze karke SEO content bana raha hai..."
+            "🧠 AI video analyze karke professional SEO package bana raha hai..."
         ):
 
             response = client.models.generate_content(
@@ -461,198 +621,213 @@ def generate_seo_content(
                 ]
             )
 
-        if not response or not response.text:
+        if not response:
 
             raise RuntimeError(
-                "Gemini ne empty response return kiya."
+                "Gemini ne response return nahi kiya."
+            )
+
+        if not response.text:
+
+            raise RuntimeError(
+                "Gemini ne empty text response return kiya."
             )
 
         return response.text
 
     finally:
 
-        # Delete local temporary file
         if temporary_path:
 
             try:
-                os.remove(temporary_path)
+                os.remove(
+                    temporary_path
+                )
             except Exception:
                 pass
 
 
 # ============================================================
-# GENERATE BUTTON
+# ANALYZE BUTTON
 # ============================================================
 
 st.markdown("---")
 
-generate_button = st.button(
-    "🚀 Analyze Video & Generate YouTube SEO",
+analyze_button = st.button(
+    "✨ ANALYZE VIDEO & GENERATE VIRAL SEO",
     type="primary",
     use_container_width=True
 )
 
 
 # ============================================================
-# GENERATE RESULT
+# BUTTON ACTION
 # ============================================================
 
-if generate_button:
+if analyze_button:
 
-    # --------------------------------------------------------
-    # API KEY CHECK
-    # --------------------------------------------------------
+    # --------------------------------------------
+    # Key check
+    # --------------------------------------------
 
-    if not api_key.strip():
+    if not st.session_state.api_key:
 
         st.error(
-            "❌ Google AI Studio API key missing hai."
+            "❌ Gemini API key missing hai."
         )
 
         st.info(
-            "Sidebar mein apni Gemini API key paste karein."
+            "Sidebar mein Google AI Studio API key paste karein."
         )
 
-    # --------------------------------------------------------
-    # API KEY FORMAT CHECK
-    # --------------------------------------------------------
-
-    elif not api_key.strip().startswith("AIza"):
+    elif not st.session_state.api_key.startswith(
+        "AIza"
+    ):
 
         st.error(
-            "❌ API key ka format check karein."
+            "❌ API key format incorrect lag raha hai."
         )
 
         st.info(
-            "Google AI Studio ki API key aam tor par "
-            "`AIza...` format mein hoti hai."
+            "Google AI Studio wali API key paste karein."
         )
 
-    # --------------------------------------------------------
-    # VIDEO CHECK
-    # --------------------------------------------------------
+    # --------------------------------------------
+    # Video check
+    # --------------------------------------------
 
     elif uploaded_video is None:
 
         st.warning(
-            "⚠️ Pehle apni video upload karein."
+            "⚠️ Pehle video upload karein."
         )
 
-    # --------------------------------------------------------
-    # GENERATE
-    # --------------------------------------------------------
+    # --------------------------------------------
+    # Generate
+    # --------------------------------------------
 
     else:
 
         try:
 
-            result = generate_seo_content(
-                api_key_value=api_key.strip(),
-                uploaded_file=uploaded_video,
-                topic=video_topic,
-                audience=target_audience,
-                output_language=language,
-                category=video_category
+            result = analyze_video(
+                st.session_state.api_key
             )
+
+            st.session_state.generated_result = result
 
             st.success(
-                "🎉 Video analysis complete! YouTube SEO package ready hai."
-            )
-
-            st.markdown("---")
-
-            st.subheader(
-                "🎯 Generated YouTube Content"
-            )
-
-            st.markdown(result)
-
-            st.markdown("---")
-
-            # Download text
-            st.download_button(
-                label="📥 Download SEO Content",
-                data=result,
-                file_name="youtube_seo_content.txt",
-                mime="text/plain",
-                use_container_width=True
+                "🎉 Analysis complete!"
             )
 
         except Exception as error:
 
-            error_message = str(error)
+            error_text = str(error)
 
             st.error(
-                "❌ Gemini API / Video Processing Error"
+                "❌ AI analysis complete nahi ho saki."
             )
 
-            # 401 / 403
             if (
-                "401" in error_message
-                or "403" in error_message
+                "401" in error_text
+                or "403" in error_text
             ):
 
                 st.warning(
-                    "API key invalid, restricted, ya unauthorized ho sakti hai."
+                    "API key invalid ya unauthorized hai."
+                )
+
+            elif "404" in error_text:
+
+                st.warning(
+                    "Selected Gemini model/API endpoint issue hai."
+                )
+
+            elif "429" in error_text:
+
+                st.warning(
+                    "⚠️ Free-tier rate limit hit ho gayi hai."
                 )
 
                 st.info(
-                    "Google AI Studio mein apni API key check karein."
+                    "Nayi API key banana is limit ko unlimited nahi karega, "
+                    "kyunki limits project level par apply hoti hain."
                 )
 
-            # 404
-            elif "404" in error_message:
-
-                st.warning(
-                    "Selected Gemini model available nahi hai "
-                    "ya API request model ko support nahi kar rahi."
-                )
-
-            # 429
-            elif "429" in error_message:
-
-                st.warning(
-                    "Free-tier rate limit hit ho gayi hai. "
-                    "Thori dair baad dobara try karein."
-                )
-
-            # Quota
-            elif "quota" in error_message.lower():
-
-                st.warning(
-                    "Gemini API quota/rate limit issue aa raha hai."
-                )
-
-            # Upload issue
             elif (
-                "upload" in error_message.lower()
-                or "file" in error_message.lower()
+                "quota" in error_text.lower()
             ):
 
                 st.warning(
-                    "Video upload/process karne mein problem aayi hai."
+                    "Gemini quota/rate limit issue hai."
                 )
 
-            # Generic
+            elif (
+                "size" in error_text.lower()
+            ):
+
+                st.warning(
+                    "Video file size/input limit ka issue ho sakta hai."
+                )
+
             else:
 
                 st.warning(
-                    "Request complete nahi ho saki. "
-                    "Neeche original error diya gaya hai."
+                    "Unexpected API error."
                 )
 
             st.code(
-                error_message
+                error_text
             )
 
 
 # ============================================================
-# FOOTER
+# RESULTS
+# ============================================================
+
+if st.session_state.generated_result:
+
+    st.markdown("---")
+
+    st.markdown(
+        '<div class="section-heading">'
+        '🏆 Your Premium YouTube SEO Package'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        st.session_state.generated_result
+    )
+
+    st.markdown("---")
+
+    st.download_button(
+        "📥 Download Complete SEO Package",
+        data=st.session_state.generated_result,
+        file_name="AI_Viral_Video_Studio_SEO.txt",
+        mime="text/plain",
+        use_container_width=True
+    )
+
+
+# ============================================================
+# BRAND FOOTER
 # ============================================================
 
 st.markdown("---")
 
-st.caption(
-    "🎬 AI Viral Video Studio | Streamlit + Google Gemini"
+st.markdown(
+    """
+    <div style="text-align:center; padding:20px;">
+        <div style="font-size:24px; font-weight:900;">
+            Husnain Akram
+        </div>
+        <div style="font-size:12px; opacity:0.55;">
+            AI Viral Video Studio
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 ```
