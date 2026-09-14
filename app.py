@@ -4,37 +4,68 @@ import base64
 
 st.set_page_config(page_title="AI VIRAL STUDIO", page_icon="👑", layout="wide")
 
-# Custom UI Styling - LUXURY THEME
+# Custom UI Styling - ULTRA LUXURY THEME
 st.markdown("""
 <style>
     /* Main Background - Deep Luxury Dark */
     .stApp { 
-        background: linear-gradient(135deg, #050505 0%, #1a1a1a 100%); 
+        background: linear-gradient(135deg, #050505 0%, #121212 100%); 
         color: #ffffff; 
     }
     
-    /* Hide unnecessary text in uploader */
-    section[data-testid="stFileUploadDropzone"] small { display: none !important; }
+    /* Completely Hide the "200MB per file" and other default text */
+    [data-testid="stFileUploadDropzone"] div div::before { display: none !important; }
+    [data-testid="stFileUploadDropzone"] div div small { display: none !important; }
+    [data-testid="stFileUploadDropzone"] > div > span { display: none !important; }
+    .st-emotion-cache-1wmy9hl { display: none !important; }
+    .st-emotion-cache-8s84i0 { display: none !important; }
     
+    /* Hiding the default instructions */
+    [data-testid="stFileUploadDropzone"] div div {
+        color: transparent !important;
+    }
+
     /* HUGE Uploader Box - Glassmorphism & Gold */
-    section[data-testid="stFileUploadDropzone"] {
-        background: rgba(255, 255, 255, 0.02) !important;
+    [data-testid="stFileUploadDropzone"] {
+        background: rgba(212, 175, 55, 0.03) !important;
         border: 2px dashed #d4af37 !important; /* Luxury Gold */
         border-radius: 30px !important;
-        padding: 180px 40px !important; /* MASSIVE PADDING FOR HUGE BUTTON */
-        text-align: center !important;
+        padding: 120px 20px !important; /* MASSIVE HEIGHT */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
         backdrop-filter: blur(10px);
         transition: all 0.3s ease-in-out;
     }
-    section[data-testid="stFileUploadDropzone"]:hover {
-        border: 2px solid #f9f295 !important;
-        background: rgba(255, 255, 255, 0.05) !important;
+    [data-testid="stFileUploadDropzone"]:hover {
+        border: 2px solid #fcf6ba !important;
+        background: rgba(212, 175, 55, 0.08) !important;
+    }
+
+    /* Making the Browse/Upload Button HUGE and Premium */
+    [data-testid="stFileUploadDropzone"] button {
+        background: linear-gradient(90deg, #bf953f 0%, #fcf6ba 50%, #b38728 100%) !important;
+        color: #000000 !important;
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        padding: 20px 50px !important;
+        border-radius: 15px !important;
+        border: none !important;
+        box-shadow: 0px 8px 25px rgba(191, 149, 63, 0.4) !important;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transform: scale(1.3) !important; /* Enlarges the button significantly */
+        visibility: visible !important;
+    }
+    [data-testid="stFileUploadDropzone"] button:hover {
+        transform: scale(1.35) !important;
+        box-shadow: 0px 10px 30px rgba(191, 149, 63, 0.6) !important;
     }
 
     /* Premium Title */
     .header-title {
         text-align: center; 
-        font-size: 55px; 
+        font-size: 60px; 
         font-weight: 900;
         background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
         -webkit-background-clip: text; 
@@ -45,10 +76,10 @@ st.markdown("""
     }
     .header-subtitle {
         text-align: center;
-        font-size: 18px;
+        font-size: 16px;
         color: #a0a0a0;
-        margin-bottom: 40px;
-        letter-spacing: 2px;
+        margin-bottom: 50px;
+        letter-spacing: 3px;
         text-transform: uppercase;
     }
 
@@ -57,19 +88,20 @@ st.markdown("""
         width: 100% !important;
         background: linear-gradient(90deg, #bf953f 0%, #fcf6ba 50%, #b38728 100%) !important;
         color: #000000 !important; 
-        font-size: 26px !important; 
+        font-size: 28px !important; 
         font-weight: 900 !important;
-        padding: 22px 30px !important; 
-        border-radius: 18px !important; 
+        padding: 25px 30px !important; 
+        border-radius: 20px !important; 
         border: none !important;
-        box-shadow: 0px 8px 25px rgba(191, 149, 63, 0.3);
+        box-shadow: 0px 10px 30px rgba(191, 149, 63, 0.3);
         text-transform: uppercase;
         letter-spacing: 2px;
         transition: transform 0.2s;
+        margin-top: 20px !important;
     }
     div.stButton > button:hover {
         transform: scale(1.02);
-        box-shadow: 0px 10px 30px rgba(191, 149, 63, 0.5);
+        box-shadow: 0px 12px 35px rgba(191, 149, 63, 0.5);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -78,15 +110,14 @@ st.markdown('<div class="header-title">AI VIRAL STUDIO</div>', unsafe_allow_html
 st.markdown('<div class="header-subtitle">Premium Video Strategy Analyzer</div>', unsafe_allow_html=True)
 st.markdown("---")
 
-# Making the center column wider for a massive upload box
+# Wider column for massive upload box
 _, main_col, _ = st.columns([1, 4, 1]) 
 
 with main_col:
-    uploaded_file = st.file_uploader("Drop your premium video here", type=["mp4", "mov", "avi", "mkv"])
+    uploaded_file = st.file_uploader(" ", type=["mp4", "mov", "avi", "mkv"]) # Empty string removes label
 
     if uploaded_file is not None:
         st.video(uploaded_file)
-        st.markdown("<br>", unsafe_allow_html=True)
         
         if st.button("✨ ANALYZE VIDEO ✨"):
             with st.spinner("🤖 AI Processing Luxury Strategy..."):
@@ -94,19 +125,16 @@ with main_col:
                     token = st.secrets.get("GEMINI_API_KEY", "").strip()
                     
                     if not token:
-                        st.error("Streamlit Secrets mein GEMINI_API_KEY missing hai!")
+                        st.error("Streamlit Secrets में GEMINI_API_KEY मौजूद नहीं है!")
                     else:
                         video_bytes = uploaded_file.read()
                         base64_video = base64.b64encode(video_bytes).decode("utf-8")
                         
-                        # SMART FALLBACK SYSTEM: Automatically hunts for the correct model
+                        # SMART FALLBACK SYSTEM
                         models_to_try = [
-                            "gemini-1.5-pro",
-                            "gemini-1.5-flash",
-                            "gemini-1.5-pro-001",
-                            "gemini-1.5-flash-001",
-                            "gemini-1.5-pro-002",
-                            "gemini-1.5-flash-002"
+                            "gemini-1.5-pro", "gemini-1.5-flash",
+                            "gemini-1.5-pro-001", "gemini-1.5-flash-001",
+                            "gemini-1.5-pro-002", "gemini-1.5-flash-002"
                         ]
                         
                         success = False
@@ -140,16 +168,16 @@ with main_col:
                                 st.success(f"✅ Premium Analysis Complete! (Powered by {model_name})")
                                 st.markdown(text)
                                 success = True
-                                break  # Model mil gaya, ab mazeed check nahi karega
+                                break
                             elif response.status_code == 404:
-                                continue  # Error 404 آیا تو یہ خود بخود اگلا ماڈل ٹرائی کرے گا
+                                continue
                             else:
                                 st.error(f"API Error ({response.status_code}): {response.text}")
                                 success = True
                                 break
                                 
                         if not success:
-                            st.error("Google API Error: آپ کے اکاؤنٹ پر فی الحال کوئی بھی ماڈل کام نہیں کر رہا۔")
+                            st.error("Google API Error: आपके अकाउंट पर फिलहाल कोई भी मॉडल काम नहीं कर रहा।")
                             
                 except Exception as e:
                     st.error(f"Execution Error: {str(e)}")
