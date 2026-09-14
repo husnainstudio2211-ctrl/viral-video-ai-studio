@@ -4,7 +4,7 @@ import base64
 
 st.set_page_config(page_title="AI VIRAL STUDIO", page_icon="👑", layout="wide")
 
-# Custom UI Styling - ULTRA LUXURY THEME
+# Custom UI Styling
 st.markdown("""
 <style>
     .stApp { background: linear-gradient(135deg, #050505 0%, #121212 100%); color: #ffffff; }
@@ -61,30 +61,36 @@ with main_col:
     if uploaded_file is not None:
         st.video(uploaded_file)
         
+        # فائل سائز کی وارننگ (Direct Base64 کے لیے 20MB سے کم فائل بہترین رہتی ہے)
+        file_size_mb = uploaded_file.size / (1024 * 1024)
+        if file_size_mb > 20:
+            st.warning("⚠️ ویڈیو کا سائز 20MB سے بڑا ہے۔ تیز ترین اور بغیر ایرر اینالیسس کے لیے 15-20MB تک کی ویڈیو یا کلپ استعمال کریں۔")
+
         if st.button("✨ ANALYZE VIDEO ✨"):
-            # 🔴 YAHAN APNI REAL 'AIza...' WALI KEYS KI LIST RAKHEIN
-            # Agar 1 Key hai toh 1 rakhein, 2-3 hain toh comma laga kar add kar dein
+            # 🔑 آپ کی AIza... والی Keys کی لسٹ
             API_KEYS = [
                 st.secrets.get("GEMINI_API_KEY", "").strip(),
-                # "AIzaSy_Aapki_Doosri_Key_Yahan", 
             ]
-            
-            # Khali keys ko filter karna
             API_KEYS = [k for k in API_KEYS if k]
             
             if not API_KEYS:
-                st.error("❌ کوئی بھی معتبر API Key نہیں ملی! براے مہربانی aistudio.google.com سے AIza... والی کی (Key) بنا کر درج کریں۔")
+                st.error("❌ کوئی API Key نہیں ملی! Streamlit Secrets میں اپنی AIza... والی کی درج کریں۔")
             else:
-                with st.spinner("🤖 Generating Luxury Strategy..."):
+                with st.spinner("🤖 Analyzing Video with Gemini AI..."):
                     try:
                         video_bytes = uploaded_file.read()
                         base64_video = base64.b64encode(video_bytes).decode("utf-8")
                         
-                        models_to_try = ["gemini-1.5-flash", "gemini-1.5-pro"]
+                        # 🎯 اپڈیٹ شدہ ماڈل نیمز (گوگل کے بالکل نئے ماڈلز)
+                        models_to_try = [
+                            "gemini-2.0-flash",
+                            "gemini-1.5-flash-latest",
+                            "gemini-1.5-flash"
+                        ]
+                        
                         success = False
                         last_error = ""
                         
-                        # Multi-Key & Multi-Model Smart Failover Loop
                         for current_key in API_KEYS:
                             for model_name in models_to_try:
                                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={current_key}"
@@ -109,10 +115,10 @@ with main_col:
                                 if response.status_code == 200:
                                     res_json = response.json()
                                     text = res_json['candidates'][0]['content']['parts'][0]['text']
-                                    st.success(f"✅ Premium Analysis Complete! (Powered by {model_name})")
+                                    st.success(f"✅ Analysis Complete! (Powered by {model_name})")
                                     st.markdown(text)
                                     success = True
-                                    break 
+                                    break
                                 else:
                                     last_error = f"Model {model_name} Error ({response.status_code}): {response.text}"
                                     continue
@@ -121,7 +127,7 @@ with main_col:
                                 break
                                 
                         if not success:
-                            st.error("❌ تمام API Keys اور ماڈلز فیل ہو گئے۔ آخر میں آنے والا ایرر یہ ہے:")
+                            st.error("❌ ایرر آیا ہے۔ تفصیلات نیچے دیکھین:")
                             st.code(last_error)
                             
                     except Exception as e:
