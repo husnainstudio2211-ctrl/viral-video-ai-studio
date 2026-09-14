@@ -1,177 +1,109 @@
-```python
-import os
 import streamlit as st
 from google import genai
 
-# =========================================================
-# PAGE CONFIGURATION
-# =========================================================
+# ============================================================
+# PAGE CONFIG
+# ============================================================
+
 st.set_page_config(
     page_title="AI Viral Video Studio",
     page_icon="🎬",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# =========================================================
-# CUSTOM CSS
-# =========================================================
-st.markdown(
-    """
-    <style>
-        .main-title {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-
-        .sub-title {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-top: 15px;
-        }
-
-        .result-box {
-            padding: 18px;
-            border-radius: 12px;
-            border: 1px solid rgba(128,128,128,0.25);
-            background-color: rgba(128,128,128,0.06);
-            margin-bottom: 15px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# =========================================================
+# ============================================================
 # HEADER
-# =========================================================
-st.markdown(
-    '<div class="main-title">🎬 AI Viral Video Studio</div>',
-    unsafe_allow_html=True
-)
+# ============================================================
+
+st.title("🎬 AI Viral Video Studio")
 
 st.markdown(
-    '<div class="sub-title">'
-    'YouTube ke liye Titles, Descriptions, Tags, Hashtags aur Upload Strategy generate karein.'
-    '</div>',
-    unsafe_allow_html=True
+    "YouTube creators ke liye AI-powered Titles, Descriptions, "
+    "Tags, Hashtags aur Upload Strategy generator."
 )
 
-# =========================================================
+st.markdown("---")
+
+# ============================================================
 # SIDEBAR
-# =========================================================
-st.sidebar.header("🔑 Gemini Configuration")
+# ============================================================
 
-# Try environment variable first
-env_api_key = os.getenv("GEMINI_API_KEY", "")
+st.sidebar.header("🔑 Gemini API Setup")
 
 api_key = st.sidebar.text_input(
     "Google AI Studio API Key",
-    value=env_api_key,
     type="password",
     placeholder="AIza..."
 )
 
 st.sidebar.markdown("---")
 
-st.sidebar.subheader("🤖 Gemini Model")
-
-model_options = [
-    "gemini-3.8-flash",
-    "gemini-3.7-flash",
-    "gemini-3.6-flash",
-    "gemini-3.5-flash",
-    "gemini-2.5-flash",
-]
-
-selected_model = st.sidebar.selectbox(
-    "Model select karein:",
-    model_options,
-    index=0
+st.sidebar.write(
+    "Google AI Studio se apni Gemini API key paste karein."
 )
 
-st.sidebar.markdown("---")
+# ============================================================
+# MODEL
+# ============================================================
 
-st.sidebar.info(
-    "💡 Google AI Studio se API key banai ja sakti hai. "
-    "Free tier ki usage limits hoti hain."
-)
+MODEL_NAME = "gemini-3.1-flash-lite"
 
-# =========================================================
-# MAIN INPUTS
-# =========================================================
-st.markdown(
-    '<div class="section-title">📝 Video Details</div>',
-    unsafe_allow_html=True
-)
+# ============================================================
+# INPUT SECTION
+# ============================================================
+
+st.subheader("📝 Video Details")
 
 video_topic = st.text_area(
     "Video Topic / Idea",
-    placeholder=(
-        "Example: How to earn money online from Pakistan using freelancing apps"
-    ),
+    placeholder="Example: How to earn money online from Pakistan",
     height=120
 )
 
 target_audience = st.text_input(
     "Target Audience (Optional)",
-    placeholder="Example: Pakistan beginners, students, freelancers"
+    placeholder="Example: Pakistan students, beginners, freelancers"
 )
 
-video_language = st.selectbox(
-    "Content Language",
+language = st.selectbox(
+    "Output Language",
     [
-        "Roman Urdu / Hindi",
         "English",
+        "Roman Urdu / Hindi",
         "Urdu"
     ]
 )
 
-video_type = st.selectbox(
-    "Video Type",
+video_category = st.selectbox(
+    "Video Category",
     [
-        "Informational",
-        "Tutorial / How-To",
-        "News / Updates",
-        "Review",
-        "Story / Entertainment",
-        "Educational",
+        "Education",
+        "Technology",
+        "How-To / Tutorial",
+        "Entertainment",
         "Gaming",
-        "Technology"
+        "News / Updates",
+        "Online Earning",
+        "Freelancing",
+        "Other"
     ]
 )
 
-# =========================================================
-# GENERATION FUNCTION
-# =========================================================
-def generate_youtube_seo(
-    api_key_value,
-    model_name,
-    topic,
-    audience,
-    language,
-    content_type
-):
-    """
-    Generate YouTube SEO package using the Google GenAI SDK.
-    """
+# ============================================================
+# PROMPT
+# ============================================================
 
-    client = genai.Client(api_key=api_key_value)
+def create_prompt(topic, audience, output_language, category):
 
-    audience_text = audience.strip() if audience.strip() else "General audience"
+    audience_text = audience.strip()
 
-    prompt = f"""
-You are an expert YouTube SEO strategist, content strategist,
-CTR specialist and YouTube growth consultant.
+    if not audience_text:
+        audience_text = "General YouTube audience"
 
-Create a professional YouTube SEO package for this video.
+    return f"""
+You are a professional YouTube SEO strategist and content expert.
+
+Create a complete YouTube SEO package for this video.
 
 VIDEO TOPIC:
 {topic}
@@ -179,190 +111,217 @@ VIDEO TOPIC:
 TARGET AUDIENCE:
 {audience_text}
 
-LANGUAGE:
-{language}
+VIDEO CATEGORY:
+{category}
 
-VIDEO TYPE:
-{content_type}
+OUTPUT LANGUAGE:
+{output_language}
 
-IMPORTANT GOALS:
-- Make titles highly clickable without fake clickbait.
-- Make the description naturally SEO optimized.
-- Use relevant search keywords.
-- Do not keyword-stuff.
-- Tags should be directly related to the topic.
-- Hashtags should be relevant and useful.
-- Upload timing should be presented as a practical recommendation,
-  not as a guaranteed viral result.
-- Do not invent facts about the topic.
-- Keep everything useful for a real YouTube creator.
+Your goal is to help the creator improve click-through rate,
+search discoverability, viewer interest and engagement.
 
-OUTPUT FORMAT:
+IMPORTANT RULES:
 
-## 1. 🔥 CATCHY TITLES
-Give exactly 5 title options.
+- Do not use fake or misleading clickbait.
+- Titles should be catchy but truthful.
+- Descriptions should be natural and SEO optimized.
+- Tags must be directly relevant to the video topic.
+- Hashtags must be relevant.
+- Do not keyword stuff.
+- Do not invent facts.
+- Make the output easy to copy into YouTube Studio.
 
-For each title:
-- Keep it natural.
-- Focus on CTR.
-- Make each option different.
+RETURN EXACTLY THESE SECTIONS:
 
-## 2. 📝 SEO DESCRIPTION
-Write one professional YouTube description containing:
-- Strong opening hook
-- Clear topic summary
-- Relevant keywords
-- Natural SEO language
-- Viewer value
-- Call to action
+1. CATCHY TITLES
+Give 5 different YouTube title options.
 
-## 3. 🏷️ YOUTUBE TAGS
-Give 20-30 highly relevant tags.
-Return them in one comma-separated line.
+2. SEO DESCRIPTION
+Write one complete YouTube description.
+Include:
+- strong opening hook
+- natural keywords
+- video summary
+- viewer benefit
+- call to action
 
-## 4. #️⃣ HASHTAGS
+3. YOUTUBE TAGS
+Give 25 relevant tags.
+Put them in one comma-separated line.
+
+4. HASHTAGS
 Give 10 relevant hashtags.
-Return them in one line.
+Put them in one line.
 
-## 5. ⏰ BEST UPLOAD TIMING
-Give:
-- Recommended days
-- Recommended time windows
-- Pakistan Standard Time (PKT) guidance
-- A short explanation
-- Simple strategy for testing upload times
+5. BEST UPLOAD TIMING
+Give practical upload timing suggestions for Pakistan Standard Time (PKT).
+Include:
+- best days
+- best time windows
+- testing strategy
 
-## 6. 📈 EXTRA SEO STRATEGY
-Give 5 practical tips that can improve:
+Do not claim that a specific upload time guarantees virality.
+
+6. SEO STRATEGY
+Give 5 practical tips for:
 - CTR
-- Search discoverability
-- Retention
-- Engagement
-- Early video performance
-
-Make the answer clean and easy to copy into YouTube Studio.
+- search visibility
+- retention
+- engagement
+- early performance
 """
 
-    response = client.models.generate_content(
-        model=model_name,
-        contents=prompt
-    )
+# ============================================================
+# GENERATE CONTENT
+# ============================================================
 
-    if not response or not response.text:
-        raise RuntimeError("Gemini ne empty response return kiya.")
-
-    return response.text
-
-
-# =========================================================
-# BUTTON
-# =========================================================
-generate_button = st.button(
-    "🚀 Generate Viral YouTube SEO",
+if st.button(
+    "🚀 Generate YouTube SEO",
     type="primary",
     use_container_width=True
-)
+):
 
-# =========================================================
-# GENERATE
-# =========================================================
-if generate_button:
+    # --------------------------------------------------------
+    # VALIDATION
+    # --------------------------------------------------------
 
     if not api_key.strip():
-        st.error("❌ Sab se pehle Google AI Studio API Key enter karein.")
+
+        st.error(
+            "❌ Pehle sidebar mein Google AI Studio API key enter karein."
+        )
 
     elif not api_key.strip().startswith("AIza"):
-        st.warning(
-            "⚠️ API key aam tor par AI Studio key ki tarah `AIza...` "
-            "se start hoti hai. Key ko dobara check karein."
+
+        st.error(
+            "❌ API key ka format check karein. "
+            "Google AI Studio key aam tor par AIza... se start hoti hai."
         )
 
     elif not video_topic.strip():
-        st.warning("⚠️ Video topic/idea zaroor enter karein.")
+
+        st.warning(
+            "⚠️ Pehle apni video ka topic ya idea enter karein."
+        )
 
     else:
 
         try:
+
+            # ------------------------------------------------
+            # CREATE GEMINI CLIENT
+            # ------------------------------------------------
+
+            client = genai.Client(
+                api_key=api_key.strip()
+            )
+
+            prompt = create_prompt(
+                topic=video_topic.strip(),
+                audience=target_audience,
+                output_language=language,
+                category=video_category
+            )
+
+            # ------------------------------------------------
+            # GEMINI REQUEST
+            # ------------------------------------------------
+
             with st.spinner(
-                f"🤖 {selected_model} se YouTube SEO content generate ho raha hai..."
+                "🤖 Gemini AI aapka YouTube SEO package bana raha hai..."
             ):
 
-                result = generate_youtube_seo(
-                    api_key_value=api_key.strip(),
-                    model_name=selected_model,
-                    topic=video_topic.strip(),
-                    audience=target_audience,
-                    language=video_language,
-                    content_type=video_type
+                response = client.models.generate_content(
+                    model=MODEL_NAME,
+                    contents=prompt
                 )
 
-            st.success("✅ YouTube SEO package successfully generate ho gaya!")
+            # ------------------------------------------------
+            # RESULT
+            # ------------------------------------------------
 
-            st.markdown("---")
+            if response and response.text:
 
-            # =================================================
-            # RESULTS
-            # =================================================
-            st.markdown(
-                '<div class="section-title">🎯 Generated Content</div>',
-                unsafe_allow_html=True
-            )
+                st.success(
+                    "✅ YouTube SEO content successfully generated!"
+                )
 
-            st.markdown(result)
+                st.markdown("---")
 
-            # =================================================
-            # DOWNLOAD
-            # =================================================
-            st.markdown("---")
+                st.subheader("🎯 Your YouTube SEO Package")
 
-            st.download_button(
-                label="📥 Download SEO Content",
-                data=result,
-                file_name="youtube_seo_content.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
+                st.markdown(response.text)
 
-        except Exception as e:
+                # --------------------------------------------
+                # DOWNLOAD
+                # --------------------------------------------
 
-            error_text = str(e)
+                st.download_button(
+                    label="📥 Download SEO Content",
+                    data=response.text,
+                    file_name="youtube_seo_content.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+
+            else:
+
+                st.error(
+                    "❌ Gemini ne koi text response return nahi kiya."
+                )
+
+        except Exception as error:
+
+            error_message = str(error)
 
             st.error("❌ Gemini API Error")
 
-            # Helpful error messages
-            if "404" in error_text and "not found" in error_text.lower():
+            # ----------------------------------------------
+            # ERROR HELP
+            # ----------------------------------------------
+
+            if "404" in error_message:
+
                 st.warning(
-                    "Model available nahi hai. Sidebar mein doosra model select "
-                    "karke دوبارہ try karein."
+                    "Model/API endpoint issue aa raha hai. "
+                    "Code mein current Gemini model use ho raha hai."
                 )
 
-            elif "401" in error_text or "403" in error_text:
+            elif "401" in error_message or "403" in error_message:
+
                 st.warning(
-                    "API key invalid ya unauthorized lag rahi hai. "
-                    "Google AI Studio mein key check karein."
+                    "API key invalid, restricted, ya unauthorized ho sakti hai. "
+                    "Google AI Studio mein apni key check karein."
                 )
 
-            elif "429" in error_text:
+            elif "429" in error_message:
+
                 st.warning(
                     "Free-tier rate limit hit ho gayi hai. "
-                    "Thori dair baad دوبارہ try karein."
+                    "Baad mein dobara try karein."
                 )
 
-            elif "quota" in error_text.lower():
+            elif "quota" in error_message.lower():
+
                 st.warning(
-                    "API quota/rate limit issue aa raha hai. "
-                    "Apni AI Studio usage check karein."
+                    "API quota/rate limit issue aa raha hai."
                 )
 
-            st.code(error_text)
+            else:
 
+                st.warning(
+                    "API request mein problem aa gayi hai. "
+                    "Neeche original error diya gaya hai."
+                )
 
-# =========================================================
+            st.code(error_message)
+
+# ============================================================
 # FOOTER
-# =========================================================
+# ============================================================
+
 st.markdown("---")
 
 st.caption(
-    "🎬 AI Viral Video Studio • Powered by Google Gemini API • Streamlit"
+    "🎬 AI Viral Video Studio | Streamlit + Google Gemini"
 )
-```
