@@ -24,17 +24,10 @@ st.markdown("""
     }
     [data-testid="stFileUploadDropzone"] button {
         background: linear-gradient(90deg, #bf953f 0%, #fcf6ba 50%, #b38728 100%) !important;
-        color: #000000 !important;
-        font-size: 24px !important;
-        font-weight: 900 !important;
-        padding: 20px 50px !important;
-        border-radius: 15px !important;
-        border: none !important;
-        box-shadow: 0px 8px 25px rgba(191, 149, 63, 0.4) !important;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        transform: scale(1.3) !important;
-        visibility: visible !important;
+        color: #000000 !important; font-size: 24px !important; font-weight: 900 !important;
+        padding: 20px 50px !important; border-radius: 15px !important; border: none !important;
+        box-shadow: 0px 8px 25px rgba(191, 149, 63, 0.4) !important; text-transform: uppercase;
+        letter-spacing: 2px; transform: scale(1.3) !important; visibility: visible !important;
     }
     .header-title {
         text-align: center; font-size: 60px; font-weight: 900;
@@ -69,61 +62,67 @@ with main_col:
         st.video(uploaded_file)
         
         if st.button("✨ ANALYZE VIDEO ✨"):
-            token = "AQ.Ab8RN6LurqxJy1KCsAwI6wfdECGiRbzPyiwDLE2hfgpXkfwckQ"
+            # 🔴 YAHAN APNI REAL 'AIza...' WALI KEYS KI LIST RAKHEIN
+            # Agar 1 Key hai toh 1 rakhein, 2-3 hain toh comma laga kar add kar dein
+            API_KEYS = [
+                st.secrets.get("GEMINI_API_KEY", "").strip(),
+                # "AIzaSy_Aapki_Doosri_Key_Yahan", 
+            ]
             
-            with st.spinner("🤖 Generating Luxury Strategy..."):
-                try:
-                    video_bytes = uploaded_file.read()
-                    base64_video = base64.b64encode(video_bytes).decode("utf-8")
-                    
-                    # 🔴 YAHAN FIX KIYA HAI: 'Authorization: Bearer' ka istemal!
-                    auth_headers = {"Authorization": f"Bearer {token}"}
-                    
-                    models_to_try = [
-                        "gemini-1.5-pro", "gemini-1.5-flash",
-                        "gemini-1.5-pro-001", "gemini-1.5-flash-001"
-                    ]
-                    
-                    success = False
-                    last_error = ""
-                    
-                    for model_name in models_to_try:
-                        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-                        headers = {
-                            **auth_headers,
-                            "Content-Type": "application/json"
-                        }
+            # Khali keys ko filter karna
+            API_KEYS = [k for k in API_KEYS if k]
+            
+            if not API_KEYS:
+                st.error("❌ کوئی بھی معتبر API Key نہیں ملی! براے مہربانی aistudio.google.com سے AIza... والی کی (Key) بنا کر درج کریں۔")
+            else:
+                with st.spinner("🤖 Generating Luxury Strategy..."):
+                    try:
+                        video_bytes = uploaded_file.read()
+                        base64_video = base64.b64encode(video_bytes).decode("utf-8")
                         
-                        payload = {
-                            "contents": [{
-                                "parts": [
-                                    {"text": "Perform a professional, high-end viral strategy breakdown for this video: 1. 5 High-CTR Viral Titles, 2. First 3-Second Hook Optimization, 3. Audience Retention Factors, 4. Trending Hashtags & SEO Keywords, 5. Actionable Call-To-Action (CTA)."},
-                                    {
-                                        "inlineData": {  
-                                            "mimeType": uploaded_file.type,  
-                                            "data": base64_video
-                                        }
-                                    }
-                                ]
-                            }]
-                        }
+                        models_to_try = ["gemini-1.5-flash", "gemini-1.5-pro"]
+                        success = False
+                        last_error = ""
                         
-                        response = requests.post(url, headers=headers, json=payload)
-                        
-                        if response.status_code == 200:
-                            res_json = response.json()
-                            text = res_json['candidates'][0]['content']['parts'][0]['text']
-                            st.success(f"✅ Premium Analysis Complete! (Powered by {model_name})")
-                            st.markdown(text)
-                            success = True
-                            break 
-                        else:
-                            last_error = f"Model {model_name} Error ({response.status_code}): {response.text}"
-                            continue
+                        # Multi-Key & Multi-Model Smart Failover Loop
+                        for current_key in API_KEYS:
+                            for model_name in models_to_try:
+                                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={current_key}"
+                                headers = {"Content-Type": "application/json"}
+                                
+                                payload = {
+                                    "contents": [{
+                                        "parts": [
+                                            {"text": "Perform a professional, high-end viral strategy breakdown for this video: 1. 5 High-CTR Viral Titles, 2. First 3-Second Hook Optimization, 3. Audience Retention Factors, 4. Trending Hashtags & SEO Keywords, 5. Actionable Call-To-Action (CTA)."},
+                                            {
+                                                "inlineData": {  
+                                                    "mimeType": uploaded_file.type,  
+                                                    "data": base64_video
+                                                }
+                                            }
+                                        ]
+                                    }]
+                                }
+                                
+                                response = requests.post(url, headers=headers, json=payload)
+                                
+                                if response.status_code == 200:
+                                    res_json = response.json()
+                                    text = res_json['candidates'][0]['content']['parts'][0]['text']
+                                    st.success(f"✅ Premium Analysis Complete! (Powered by {model_name})")
+                                    st.markdown(text)
+                                    success = True
+                                    break 
+                                else:
+                                    last_error = f"Model {model_name} Error ({response.status_code}): {response.text}"
+                                    continue
                             
-                    if not success:
-                        st.error("❌ Google API Error:")
-                        st.code(last_error)
-                        
-                except Exception as e:
-                    st.error(f"Execution Error: {str(e)}")
+                            if success:
+                                break
+                                
+                        if not success:
+                            st.error("❌ تمام API Keys اور ماڈلز فیل ہو گئے۔ آخر میں آنے والا ایرر یہ ہے:")
+                            st.code(last_error)
+                            
+                    except Exception as e:
+                        st.error(f"Execution Error: {str(e)}")
