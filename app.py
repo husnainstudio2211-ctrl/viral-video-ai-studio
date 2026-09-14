@@ -69,16 +69,16 @@ with main_col:
         st.video(uploaded_file)
         
         if st.button("✨ ANALYZE VIDEO ✨"):
-            # Yahan maine tumhari API key direct laga di hai!
             token = "AQ.Ab8RN6LurqxJy1KCsAwI6wfdECGiRbzPyiwDLE2hfgpXkfwckQ"
             
             with st.spinner("🤖 Generating Luxury Strategy..."):
                 try:
-                    # Video ko Base64 mein convert karna
                     video_bytes = uploaded_file.read()
                     base64_video = base64.b64encode(video_bytes).decode("utf-8")
                     
-                    auth_headers = {"x-goog-api-key": token}
+                    # 🔴 YAHAN FIX KIYA HAI: 'Authorization: Bearer' ka istemal!
+                    auth_headers = {"Authorization": f"Bearer {token}"}
+                    
                     models_to_try = [
                         "gemini-1.5-pro", "gemini-1.5-flash",
                         "gemini-1.5-pro-001", "gemini-1.5-flash-001"
