@@ -1,4 +1,4 @@
-```python
+
 import os
 import time
 import tempfile
@@ -830,4 +830,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-```
+
